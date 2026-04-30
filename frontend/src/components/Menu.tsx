@@ -9,7 +9,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Tooltip
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -22,7 +23,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AdbIcon from '@mui/icons-material/Adb';
 
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/index";
@@ -59,9 +60,11 @@ export default function Menu({ children }: MenuProps) {
         <Toolbar>
 
           {/* Botón hamburguesa para abrir el menú lateral */}
-          <IconButton edge="start" color="inherit" onClick={toggleDrawer(true)}>
-            <MenuIcon />
-          </IconButton>
+          <Tooltip title="Abrir menú de navegación" placement="right" arrow>
+            <IconButton edge="start" color="inherit" onClick={toggleDrawer(true)}>
+              <MenuIcon />
+            </IconButton>
+          </Tooltip>
 
           {/* Centrado del título */}
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -71,13 +74,13 @@ export default function Menu({ children }: MenuProps) {
           {/* Icono según rol */}
           {/* RENDERIZADO CONDICIONAL DE ICONOS */}
           {/* Usamos un operador ternario: condicón ? (si es true) : (si es false) */}
-          
+
           {userRol === 'admin' ? (
             /* Si es Admin, mostramos el escudo */
             <AdminPanelSettingsIcon sx={{ fontSize: 30 }} />
           ) : (
             /* Si NO es Admin (es user), mostramos el bicho Adb */
-            <AdbIcon sx={{ fontSize: 30 }} />          
+            <AdbIcon sx={{ fontSize: 30 }} />
           )}
 
         </Toolbar>
@@ -86,7 +89,7 @@ export default function Menu({ children }: MenuProps) {
       {/* Drawer deslizante */}
       <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-          
+
           <List>
 
             {/* Enlace a Home */}
@@ -102,12 +105,12 @@ export default function Menu({ children }: MenuProps) {
                 Si es 'user', esta condición da false y React no dibuja nada
             */}
             {userRol === 'admin' && (
-                <ListItem disablePadding>
+              <ListItem disablePadding>
                 <ListItemButton onClick={() => navigate("/reports")}>
-                    <ListItemIcon><DescriptionIcon /></ListItemIcon>
-                    <ListItemText primary="Informes" />
+                  <ListItemIcon><DescriptionIcon /></ListItemIcon>
+                  <ListItemText primary="Informes" />
                 </ListItemButton>
-                </ListItem>
+              </ListItem>
             )}
 
           </List>

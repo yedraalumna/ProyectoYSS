@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Chip,
   Alert,
   Stack,
   TextField,
   Button,
-  Grid
+  Grid,
+  Tooltip
 } from '@mui/material';
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -25,20 +26,20 @@ import type { RootState } from '../store/index';
 
 //Creamos el tipo itemtype. Este tipo será un objeto con un id opcional de tipo number 
 //nombre, marca y tipo de tipo string y el precio de tipo number 
-interface itemtype { 
-  id?: number 
-  nombre: string 
-  marca: string 
-  tipo: string 
-  precio: number 
-} 
+interface itemtype {
+  id?: number
+  nombre: string
+  marca: string
+  tipo: string
+  precio: number
+}
 
 //Inicializo los valores del item. Aquí no pongo el id porque no lo necesito 
-const itemInitialState: itemtype = { 
-  nombre: '', 
-  marca: '', 
-  tipo: '', 
-  precio: 0 
+const itemInitialState: itemtype = {
+  nombre: '',
+  marca: '',
+  tipo: '',
+  precio: 0
 }
 
 const Dashboard: React.FC = () => {
@@ -61,7 +62,7 @@ const Dashboard: React.FC = () => {
     try {
       const response = await fetch("http://localhost:3030/getItems");
       const data = await response.json();
-      
+
       if (data.data) {
         setProductos(data.data);
       }
@@ -85,7 +86,7 @@ const Dashboard: React.FC = () => {
       //Convierte el precio a número, mantiene los demás campos como string
       [name]: name === 'precio' ? parseFloat(value) || 0 : value
     }));
-    
+
     //Limpia mensajes anteriores cuando el usuario comienza a escribir
     if (error) setError('');
     if (success) setSuccess('');
@@ -95,7 +96,7 @@ const Dashboard: React.FC = () => {
   //Realiza la inserción de datos en la base de datos SQLite mediante una petición POST
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); //Previene el comportamiento por defecto del formulario
-    
+
     //VALIDACIÓN DE CAMPOS OBLIGATORIOS
     //Verifica que todos los campos requeridos
     if (!item.nombre.trim() || !item.marca.trim() || !item.tipo.trim()) {
@@ -119,8 +120,8 @@ const Dashboard: React.FC = () => {
       //Envía los datos del formulario en formato JSON
       const response = await fetch("http://localhost:3030/addItem", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json" 
+        headers: {
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(item) //Convierte el objeto a JSON
       });
@@ -132,14 +133,14 @@ const Dashboard: React.FC = () => {
       if (data.affectedRows > 0) {
         //AVISAMOS AL USUARIO QUE SE INSERTÓ CORRECTAMENTE
         alert('Datos guardados con éxito en SQLite');
-        
+
         //FEEDBACK AL USUARIO EN LA INTERFAZ
         setSuccess('Producto insertado correctamente en la base de datos SQLite');
         setItem(itemInitialState); //Restablece el formulario a valores iniciales
-        
+
         //RECARGAR LA LISTA DE PRODUCTOS DESDE LA BASE DE DATOS SQLite
         await cargarProductos();
-        
+
       } else {
         throw new Error("Error al insertar el producto en la base de datos SQLite");
       }
@@ -159,17 +160,17 @@ const Dashboard: React.FC = () => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto de la base de datos?')) {
       try {
         const response = await fetch(`http://localhost:3030/deleteItem?id=${id}`);
-        
+
         const data = await response.json();
-        
+
         //ADAPTACIÓN PARA SQLITE: Verificamos affectedRows directamente
         if (data.affectedRows > 0) {
           //Mostrar mensaje de éxito
           setSuccess('Producto eliminado correctamente de SQLite');
-          
+
           //Recargar la lista de productos
           await cargarProductos();
-          
+
           //Limpiar mensaje después de 3 segundos
           setTimeout(() => setSuccess(''), 3000);
         } else {
@@ -178,7 +179,7 @@ const Dashboard: React.FC = () => {
       } catch (error) {
         console.error("Error al eliminar producto:", error);
         setError('Error al eliminar el producto de la base de datos SQLite');
-        
+
         //Limpiar mensaje de error después de 3 segundos
         setTimeout(() => setError(''), 3000);
       }
@@ -195,7 +196,7 @@ const Dashboard: React.FC = () => {
         <Typography variant="body1" sx={{ mb: 2, color: 'text.secondary' }}>
           Complete el formulario para agregar nuevos productos a la base de datos SQLite
         </Typography>
-        
+
         {/* ALERTAS DE FEEDBACK */}
         {/* Muestra mensaje de éxito tras inserción exitosa */}
         {success && (
@@ -203,101 +204,100 @@ const Dashboard: React.FC = () => {
             {success}
           </Alert>
         )}
-        
+
         {/* Muestra mensaje de error si ocurre algún problema */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
-        
+
         {/* FORMULARIO PRINCIPAL */}
         <form onSubmit={handleSubmit}>
           <Stack spacing={3}>
             {/* LAYOUT RESPONSIVE CON GRID */}
-        <Grid container spacing={2}>
-  
-        {/* CAMPO NOMBRE */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-                label="Nombre del Producto"
-                name="nombre"
-                value={item.nombre}
-                onChange={handleChange}
-                fullWidth
-                required
-                disabled={isSubmitting}
-                size="small"
-                placeholder="Ingrese el nombre del producto"
-            />
-        </Grid>
-  
-        {/* CAMPO MARCA */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-                label="Marca"
-                name="marca"
-                value={item.marca}
-                onChange={handleChange}
-                fullWidth
-                required
-                disabled={isSubmitting}
-                size="small"
-                placeholder="Ingrese la marca del producto"
-            />
-        </Grid>
-  
-        {/* CAMPO TIPO */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-                label="Tipo"
-                name="tipo"
-                value={item.tipo}
-                onChange={handleChange}
-                fullWidth
-                required
-                disabled={isSubmitting}
-                size="small"
-                placeholder="Ingrese el tipo de producto"
-            />
-        </Grid>
-  
-        {/* CAMPO PRECIO */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-                label="Precio"
-                name="precio"
-                type="number"
-                value={item.precio}
-                onChange={handleChange}
-                fullWidth
-                required
-                inputProps={{ 
-                    min: 0, 
-                    step: 0.01 
-                }}
-            disabled={isSubmitting}
-            size="small"
-            placeholder="0.00"
-            />
-        </Grid>
-    </Grid>
+            <Grid container spacing={2}>
+
+              {/* CAMPO NOMBRE */}
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Nombre del Producto"
+                  name="nombre"
+                  value={item.nombre}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                  size="small"
+                  placeholder="Ingrese el nombre del producto"
+                />
+              </Grid>
+
+              {/* CAMPO MARCA */}
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Marca"
+                  name="marca"
+                  value={item.marca}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                  size="small"
+                  placeholder="Ingrese la marca del producto"
+                />
+              </Grid>
+
+              {/* CAMPO TIPO */}
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Tipo"
+                  name="tipo"
+                  value={item.tipo}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  disabled={isSubmitting}
+                  size="small"
+                  placeholder="Ingrese el tipo de producto"
+                />
+              </Grid>
+
+              {/* CAMPO PRECIO */}
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Precio"
+                  name="precio"
+                  type="number"
+                  value={item.precio}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  inputProps={{
+                    min: 0,
+                    step: 0.01
+                  }}
+                  disabled={isSubmitting}
+                  size="small"
+                  placeholder="0.00"
+                />
+              </Grid>
+            </Grid>
 
             {/* BOTÓN DE ENVÍO */}
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={isSubmitting}
-              sx={{ 
-                py: 1.2,
-                fontWeight: 'bold',
-                borderRadius: 2
-              }}
-              fullWidth
-            >
-              {/* Texto dinámico según estado del envío */}
-              {isSubmitting ? 'INSERTANDO EN SQLite...' : '+ INSERTAR DATOS EN SQLite'}
-            </Button>
+            <Tooltip title="Añadir nuevo producto a SQLite" placement="top" arrow>
+              <span>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  disabled={isSubmitting}
+                  sx={{ py: 1.2, fontWeight: 'bold', borderRadius: 2 }}
+                  fullWidth
+                >
+                  {isSubmitting ? 'INSERTANDO EN SQLite...' : '+ INSERTAR DATOS EN SQLite'}
+                </Button>
+              </span>
+            </Tooltip>
           </Stack>
         </form>
       </Paper>
@@ -307,20 +307,20 @@ const Dashboard: React.FC = () => {
         <Typography variant="h5" component="h2" gutterBottom color="secondary">
           Inventario de Productos - SQLite
         </Typography>
-        
+
         {/* ALERTAS DE FEEDBACK PARA ELIMINACIÓN */}
         {success && (
           <Alert severity="success" sx={{ mb: 2 }}>
             {success}
           </Alert>
         )}
-        
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
-        
+
         {/* ESTADO DE LA TABLA */}
         {productos.length === 0 ? (
           <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ py: 4 }}>
@@ -344,24 +344,22 @@ const Dashboard: React.FC = () => {
                 {productos.map((row: itemtype) => (
                   <TableRow key={row.id}>
                     <TableCell>
-                      
+
                       {/* RENDERIZADO CONDICIONAL DEL BOTÓN */}
                       {/* Solo se muestra si userRol es 'admin' */}
-                      
+
                       {userRol === 'admin' && (
-                        <Button
+                        <Tooltip title="Eliminar este producto permanentemente" placement="left" arrow>
+                          <Button
                             onClick={() => handleEliminarProducto(row.id!)}
                             color="error"
                             size="small"
                             startIcon={<DeleteForeverIcon />}
-                            sx={{
-                            '&:hover': {
-                                backgroundColor: '#ffebee'
-                            }
-                            }}
-                        >
+                            sx={{ '&:hover': { backgroundColor: '#ffebee' } }}
+                          >
                             Eliminar
-                        </Button>
+                          </Button>
+                        </Tooltip>
                       )}
 
                     </TableCell>

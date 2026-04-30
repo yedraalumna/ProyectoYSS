@@ -1,4 +1,4 @@
-import { Typography, Container, Button, Stack } from "@mui/material";
+import { Typography, Container, Button, Stack, Tooltip } from "@mui/material";
 import { useState } from "react";
 
 //Importamos nuestra nueva clase InformeColeccion:
@@ -13,7 +13,7 @@ interface itemtype {
 }
 
 export default function Reports() {
-  
+
   // Variable para almacenar los datos (como hicimos en el paso anterior)
   const [datosInforme, setDatosInforme] = useState<itemtype[]>([]);
 
@@ -28,9 +28,9 @@ export default function Reports() {
       if (data.data) {
         setDatosInforme(data.data);
         //Esto indica que ya tiene los datos si quiere generar el informe
-        setGenerarInforme(true); 
-        
-        } else {
+        setGenerarInforme(true);
+
+      } else {
         console.warn("No se recibieron datos.");
       }
     } catch (error) {
@@ -41,29 +41,32 @@ export default function Reports() {
   return (
     <Container sx={{ mt: 5 }}>
       <Stack spacing={4} alignItems="center">
-        
+
         <Typography variant="h3" color="secondary" textAlign="center">
           Página Reports de Yedra
         </Typography>
 
-        <Button 
-            variant="contained" 
-            color="primary" 
-            size="large"
-            onClick={handleGenerarInforme}
-            //Deshabilitar el botón si ya se está generando (si generarInforme es true)
-            disabled={generarInforme} 
-        >
-            INFORME COLECCION
-        </Button>
+        <Tooltip title="Generar tabla de informe con los datos actuales" placement="top" arrow>
+          <span>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleGenerarInforme}
+              disabled={generarInforme}
+            >
+              INFORME COLECCION
+            </Button>
+          </span>
+        </Tooltip>
 
         {/* RENDERIZADO CONDICIONAL + PASO DE props
             Si generarInforme es true, se muestra <InformeColeccion />.
             Le pasamos la variable de estado 'datosInforme' a la prop 'productos'.
         */}
-        
+
         {generarInforme && (
-            <InformeColeccion productos={datosInforme} />
+          <InformeColeccion productos={datosInforme} />
         )}
 
       </Stack>

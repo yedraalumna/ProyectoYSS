@@ -1,7 +1,7 @@
 //Página de error personalizada (404)
 
 import { useRouteError } from "react-router-dom"; //Hook para obtener el error
-import { Container, Typography, Button, Stack } from "@mui/material";
+import { Container, Typography, Button, Stack, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function ErrorPage() {
@@ -32,13 +32,15 @@ export default function ErrorPage() {
         </Typography>
 
         {/* Botón para volver al Login */}
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => navigate("/")}
-        >
-          Volver al inicio
-        </Button>
+        <Tooltip title="Regresar a la pantalla de Login" placement="bottom" arrow>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate("/")}
+          >
+            Volver al inicio
+          </Button>
+        </Tooltip>
       </Stack>
     </Container>
   );

@@ -1,4 +1,4 @@
-import { Container, Typography, Stack, Button } from "@mui/material";
+import { Container, Typography, Stack, Button, Tooltip } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../store/index";  //Este import se declara como 'import type' porque si no da error
 import { authActions } from "../store/authSlice";
@@ -39,22 +39,23 @@ export default function Home() {
 
         <Typography variant="h1" color="primary">
           Bienvenido/a
-        </Typography>        
+        </Typography>
 
         <Typography variant="body1" align="center" sx={{ maxWidth: 350 }}>
           Home de Yedra Sánchez: Soy el usuario <strong>"{userData.userName}"</strong> y tengo el rol de <strong>"{userData.userRol}"</strong>.
         </Typography>
 
-        {/* Botón "Salir" con el mismo estilo pastel que en Login */}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleLogout} //Ejecuta la función handleLogout al hacer clic
-        >
-          Salir
-        </Button>
+        <Tooltip title="Cerrar sesión de forma segura" placement="right" arrow>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLogout}
+          >
+            Salir
+          </Button>
+        </Tooltip>
 
-        <Dashboard/>
+        <Dashboard />
 
       </Stack>
     </Container>
