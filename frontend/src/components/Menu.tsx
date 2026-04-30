@@ -13,10 +13,10 @@ import {
   Tooltip
 } from "@mui/material";
 
+import HelpIcon from "@mui/icons-material/Help";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import DescriptionIcon from "@mui/icons-material/Description";
-//import PersonIcon from "@mui/icons-material/Person";
 
 //'AdminPanelSettings' es el escudo de usuario (Admin)
 //'AdbIcon' es el icono del bicho (User)
@@ -100,18 +100,30 @@ export default function Menu({ children }: MenuProps) {
               </ListItemButton>
             </ListItem>
 
-            {/* RENDERIZADO CONDICIONAL: 
-                Solo mostramos este bloque si userRol es estrictamente igual a 'admin'.
-                Si es 'user', esta condición da false y React no dibuja nada
-            */}
+            {/* RENDERIZADO CONDICIONAL: ... */}
             {userRol === 'admin' && (
-              <ListItem disablePadding>
+                <ListItem disablePadding>
                 <ListItemButton onClick={() => navigate("/reports")}>
-                  <ListItemIcon><DescriptionIcon /></ListItemIcon>
-                  <ListItemText primary="Informes" />
+                    <ListItemIcon><DescriptionIcon /></ListItemIcon>
+                    <ListItemText primary="Informes" />
                 </ListItemButton>
-              </ListItem>
+                </ListItem>
             )}
+
+            {/* Enlace a Ayuda (Abre PDF en pestaña nueva) */}
+            <ListItem disablePadding>
+              <Tooltip title="Ver el manual de usuario (PDF)" placement="right" arrow>
+                <ListItemButton
+                  component="a"
+                  href="/Sanchez_Santana_Yedra_UT4A1.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ListItemIcon><HelpIcon /></ListItemIcon>
+                  <ListItemText primary="Ayuda" />
+                </ListItemButton>
+              </Tooltip>
+            </ListItem>
 
           </List>
         </Box>
