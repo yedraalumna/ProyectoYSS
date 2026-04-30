@@ -19,7 +19,11 @@ import {
 
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-///Creamos el tipo itemtype. Este tipo será un objeto con un id opcional de tipo number 
+//Imports necesarios para acceder al rol del usuario desde Redux
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/index';
+
+//Creamos el tipo itemtype. Este tipo será un objeto con un id opcional de tipo number 
 //nombre, marca y tipo de tipo string y el precio de tipo number 
 interface itemtype { 
   id?: number 
@@ -48,6 +52,9 @@ const Dashboard: React.FC = () => {
   const [success, setSuccess] = useState<string>('');
   //Estado para mensajes de error durante el proceso de inserción
   const [error, setError] = useState<string>('');
+
+  //Obtenemos el rol del usuario desde el store de Redux
+  const userRol = useSelector((state: RootState) => state.authenticator.userRol);
 
   //Función para cargar productos desde la base de datos SQLite
   const cargarProductos = async () => {
@@ -337,19 +344,26 @@ const Dashboard: React.FC = () => {
                 {productos.map((row: itemtype) => (
                   <TableRow key={row.id}>
                     <TableCell>
-                      <Button 
-                        onClick={() => handleEliminarProducto(row.id!)}
-                        color="error"
-                        size="small"
-                        startIcon={<DeleteForeverIcon />}
-                        sx={{
-                          '&:hover': {
-                            backgroundColor: '#ffebee'
-                          }
-                        }}
-                      >
-                        Eliminar
-                      </Button>
+                      
+                      {/* RENDERIZADO CONDICIONAL DEL BOTÓN */}
+                      {/* Solo se muestra si userRol es 'admin' */}
+                      
+                      {userRol === 'admin' && (
+                        <Button
+                            onClick={() => handleEliminarProducto(row.id!)}
+                            color="error"
+                            size="small"
+                            startIcon={<DeleteForeverIcon />}
+                            sx={{
+                            '&:hover': {
+                                backgroundColor: '#ffebee'
+                            }
+                            }}
+                        >
+                            Eliminar
+                        </Button>
+                      )}
+
                     </TableCell>
                     <TableCell>{row.id}</TableCell>
                     <TableCell component="th" scope="row">{row.nombre}</TableCell>

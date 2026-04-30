@@ -15,7 +15,12 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person";
+//import PersonIcon from "@mui/icons-material/Person";
+
+//'AdminPanelSettings' es el escudo de usuario (Admin)
+//'AdbIcon' es el icono del bicho (User)
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import AdbIcon from '@mui/icons-material/Adb';
 
 import { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
@@ -64,7 +69,17 @@ export default function Menu({ children }: MenuProps) {
           </Typography>
 
           {/* Icono según rol */}
-          <PersonIcon />
+          {/* RENDERIZADO CONDICIONAL DE ICONOS */}
+          {/* Usamos un operador ternario: condicón ? (si es true) : (si es false) */}
+          
+          {userRol === 'admin' ? (
+            /* Si es Admin, mostramos el escudo */
+            <AdminPanelSettingsIcon sx={{ fontSize: 30 }} />
+          ) : (
+            /* Si NO es Admin (es user), mostramos el bicho Adb */
+            <AdbIcon sx={{ fontSize: 30 }} />          
+          )}
+
         </Toolbar>
       </AppBar>
 
@@ -82,19 +97,24 @@ export default function Menu({ children }: MenuProps) {
               </ListItemButton>
             </ListItem>
 
-            {/* Enlace a Reports */}
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/reports")}>
-                <ListItemIcon><DescriptionIcon /></ListItemIcon>
-                <ListItemText primary="Informes" />
-              </ListItemButton>
-            </ListItem>
+            {/* RENDERIZADO CONDICIONAL: 
+                Solo mostramos este bloque si userRol es estrictamente igual a 'admin'.
+                Si es 'user', esta condición da false y React no dibuja nada
+            */}
+            {userRol === 'admin' && (
+                <ListItem disablePadding>
+                <ListItemButton onClick={() => navigate("/reports")}>
+                    <ListItemIcon><DescriptionIcon /></ListItemIcon>
+                    <ListItemText primary="Informes" />
+                </ListItemButton>
+                </ListItem>
+            )}
 
           </List>
         </Box>
       </Drawer>
 
-      {/* Aquí se renderizan las páginas que envuelves con <Menu> */}
+      {/* Aquí se renderizan las páginas */}
       <Box sx={{ padding: 3 }}>
         {children}
       </Box>

@@ -28,8 +28,7 @@ export default function Login() {
   // CORRECCIÓN CRÍTICA: Agregar dispatch para actualizar Redux
   const dispatch = useDispatch();
 
-  //"Base de datos" simulada (datos correctos)
-  const bduser = "yedra";
+  //Contraseña "simulada" para ambos usuarios
   const bdpasswd = "1234";
 
   //useState para guardar los datos del formulario (usuario y contraseña)
@@ -49,22 +48,42 @@ export default function Login() {
     });
   };
 
-  //Función que se ejecuta cuando hacemos submit (picar en "Acceder")
+  //Función que se ejecuta cuando hacemos submit (picamos en "Acceder")
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); //evita que recargue la página
+    e.preventDefault(); 
 
-    //Comprobamos usuario y contraseña
-    if (data.usuario === bduser && data.password === bdpasswd) {
-      // CORRECCIÓN CRÍTICA: Actualizar el estado global de Redux
-      dispatch(authActions.login({
-        name: data.usuario,
-        rol: "administrador" // Rol del usuario autenticado
-      }));
-      
-      //Si son correctos, navegamos a la página /home
-      navigate("/home");
+    /* Lógica para admitir dos usuarios y asignar roles distintos
+    Usuario 1: yedra (admin)
+    Usuario 2: user (user) */
+    
+    //Verificamos si la contraseña es correcta
+    if (data.password === bdpasswd) {
+        
+        //Caso ADMIN
+        if (data.usuario === "yedra") {
+             dispatch(authActions.login({
+                name: "yedra",
+                rol: "admin" //Asignamos rol admin
+             }));
+             navigate("/home");
+             return;
+        }
+
+        //Caso USER
+        if (data.usuario === "user") {
+            dispatch(authActions.login({
+                name: "user",
+                rol: "user" //Asignamos rol user
+             }));
+             navigate("/home");
+             return;
+        }
+
+        //Si la contraseña es correcta pero el usuario no es ninguno de los dos
+        setError(true);
+
     } else {
-      //Si son incorrectos, mostramos mensaje de error
+      //Contraseña incorrecta
       setError(true);
     }
   };
@@ -91,43 +110,39 @@ export default function Login() {
               {/* FORMULARIO  */}
               <Box
                 component="form"
-                onSubmit={handleSubmit} //el botón Acceder activará esta función
+                onSubmit={handleSubmit} 
                 sx={{ width: "100%" }}
               >
-                {/* Campo usuario */}
                 <TextField
                   fullWidth
                   label="Usuario"
-                  name="usuario" //necesario para recoger el valor con handleChange
+                  name="usuario" 
                   value={data.usuario}
                   onChange={handleChange}
-                  required //campo obligatorio
+                  required 
                   sx={{ backgroundColor: "white", borderRadius: 1, mb: 2 }}
+                  placeholder="Prueba con 'yedra' o 'user'"
                 />
-  
-                {/* Campo contraseña */}
+ 
                 <TextField
                   fullWidth
-                  type="password" //Oculta el texto al escribir
+                  type="password" 
                   label="Contraseña"
                   name="password"
                   value={data.password}
                   onChange={handleChange}
-                  required //Campo obligatorio
+                  required 
                   sx={{ backgroundColor: "white", borderRadius: 1, mb: 2 }}
                 />
-  
-                {/* Botón Acceder del formulario */}
-                {/* type="submit" hace que se active handleSubmit */}
+ 
                 <Button variant="contained" fullWidth type="submit">
                   ACCEDER
                 </Button>
               </Box>
-  
-              {/*Si message = error, mensaje rojo (error) */}
+ 
               {error && (
                 <Alert severity="error" sx={{ width: "100%" }}>
-                  Usuario y/o contraseña incorrectos.
+                  Usuario no reconocido o contraseña incorrecta.
                 </Alert>
               )}
               </Stack>
